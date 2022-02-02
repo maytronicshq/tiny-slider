@@ -2,6 +2,11 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var win$1 = window;
+var raf = win$1.requestAnimationFrame || win$1.webkitRequestAnimationFrame || win$1.mozRequestAnimationFrame || win$1.msRequestAnimationFrame || function (cb) {
+  return setTimeout(cb, 16);
+};
+
 var win = window;
 var caf = win.cancelAnimationFrame || win.mozCancelAnimationFrame || function (id) {
   clearTimeout(id);
@@ -91,7 +96,7 @@ function resetFakeBody(body, docOverflow) {
   }
 }
 
-// get css-calc
+// get css-calc 
 function calc() {
   var doc = document,
       body = getBody(),
@@ -558,6 +563,7 @@ var tns = function (options) {
     freezable: true,
     onInit: false,
     useLocalStorage: true,
+    textDirection: 'ltr',
     nonce: false
   }, options || {});
   var doc = document,
@@ -757,6 +763,7 @@ var tns = function (options) {
       autoHeight = getOption('autoHeight'),
       controls = getOption('controls'),
       controlsText = getOption('controlsText'),
+      textDirection = getOption('textDirection'),
       nav = getOption('nav'),
       touch = getOption('touch'),
       mouseDrag = getOption('mouseDrag'),
@@ -1055,7 +1062,14 @@ var tns = function (options) {
     rect = div.getBoundingClientRect();
     width = rect.right - rect.left;
     div.remove();
-    return width || getClientWidth(el.parentNode);
+
+    if (width) {
+      return width;
+    } else if (el.parentNode.parentNode !== null) {
+      getClientWidth(el.parentNode);
+    } else {
+      return;
+    }
   }
 
   function getViewportWidth() {
@@ -2893,6 +2907,10 @@ var tns = function (options) {
       val = getContainerTransformValue();
     }
 
+    if (textDirection === 'rtl' && val.charAt(0) === '-') {
+      val = val.substr(1);
+    }
+
     container.style[transformAttr] = transformPrefix + val + transformPostfix;
   }
 
@@ -3526,7 +3544,12 @@ var tns = function (options) {
             if (horizontal && !autoWidth) {
               var indexMoved = -dist * items / (viewport + gutter);
               indexMoved = dist > 0 ? Math.floor(indexMoved) : Math.ceil(indexMoved);
-              index += indexMoved;
+
+              if (textDirection === 'rtl') {
+                index += indexMoved * -1;
+              } else {
+                index += indexMoved;
+              }
             } else {
               var moved = -(translateInit + dist);
 
