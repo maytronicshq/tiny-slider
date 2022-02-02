@@ -12,6 +12,7 @@
     "start": "nodemon --watch test/js/tests-async.js --exec npm run compile",
     "compile": "npx babel test/js/tests-async.js -o test/js/tests-async-es5.js",
     "build": "rollup --config rollup.config.js",
+    "min": "uglifyjs dist/tiny-slider.js -o dist/min/tiny-slider.js -c -m ",
     "build-watch": "babel --watch src -o dist/tiny-slider.js",
     "prepare": "npm run build",
     "test": "nightwatch -c browserstack.conf.js -e chrome,firefox,ie,edge,safari,opera",
@@ -47,6 +48,7 @@
     "@rollup/plugin-commonjs": "^20.0.0",
     "nightwatch": "^1.7.11",
     "nodemon": "^2.0.3",
-    "rollup": "^2.56.3"
+    "rollup": "^2.56.3",
+    "uglify-js": "^3.15.0"
   }
 }
